@@ -15,7 +15,7 @@ class Tacotron():
     self._hparams = hparams
 
 
-  def initialize(self, inputs, input_lengths, mel_targets=None, linear_targets=None, reference_mel=None):
+  def initialize(self, inputs, input_lengths, inputs_jp=None, mel_targets=None, linear_targets=None ):
     '''Initializes the model for inference.
 
     Sets "mel_outputs", "linear_outputs", and "alignments" fields.
@@ -39,10 +39,10 @@ class Tacotron():
       hp = self._hparams
 
       # Embeddings
-      embedding_table = tf.get_variable(
-        'text_embedding', [len(symbols), hp.embed_depth], dtype=tf.float32,
-        initializer=tf.truncated_normal_initializer(stddev=0.5))
-      embedded_inputs = tf.nn.embedding_lookup(embedding_table, inputs)           # [N, T_in, 256]
+      # embedding_table = tf.get_variable(
+      #   'text_embedding', [len(symbols), hp.embed_depth], dtype=tf.float32,
+      #   initializer=tf.truncated_normal_initializer(stddev=0.5))
+      # embedded_inputs = tf.nn.embedding_lookup(embedding_table, inputs)           # [N, T_in, 256]
       
       if hp.use_gst:
         #Global style tokens (GST)
@@ -52,16 +52,17 @@ class Tacotron():
         self.gst_tokens = gst_tokens
  
       # Encoder
-      prenet_outputs = prenet(embedded_inputs, is_training)                       # [N, T_in, 128]
+      # prenet_outputs = prenet(embedded_inputs, is_training)
+      prenet_outputs = prenet(inputs, is_training)
+      # [N, T_in, 128]
       encoder_outputs = encoder_cbhg(prenet_outputs, input_lengths, is_training)  # [N, T_in, 256]
       
-      if is_training:
-        reference_mel = mel_targets
 
-      if reference_mel is not None:
+
+      if inputs_jp  is not None:
         # Reference encoder
         refnet_outputs = reference_encoder(
-          reference_mel, 
+          inputs_jp,
           filters=hp.reference_filters, 
           kernel_size=(3,3),
           strides=(2,2),
@@ -141,9 +142,8 @@ class Tacotron():
       self.alignments = alignments
       self.mel_targets = mel_targets
       self.linear_targets = linear_targets
-      self.reference_mel = reference_mel
+      self.inputs_jp = inputs_jp
       log('Initialized Tacotron model. Dimensions: ')
-      log('  text embedding:          %d' % embedded_inputs.shape[-1])
       log('  style embedding:         %d' % style_embeddings.shape[-1])
       log('  prenet out:              %d' % prenet_outputs.shape[-1])
       log('  encoder out:             %d' % encoder_outputs.shape[-1])

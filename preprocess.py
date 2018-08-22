@@ -2,7 +2,7 @@ import argparse
 import os
 from multiprocessing import cpu_count
 from tqdm import tqdm
-from datasets import blizzard, ljspeech, blizzard2013
+from datasets import blizzard, ljspeech,ImuSpeech
 from hparams import hparams
 
 
@@ -15,18 +15,19 @@ def preprocess_blizzard(args):
 
 
 def preprocess_ljspeech(args):
-  in_dir = os.path.join(args.base_dir, 'database/LJSpeech-1.0')
+  in_dir = os.path.join(args.base_dir, 'LJSpeech-1.1')
   out_dir = os.path.join(args.base_dir, args.output)
   os.makedirs(out_dir, exist_ok=True)
   metadata = ljspeech.build_from_path(in_dir, out_dir, args.num_workers, tqdm=tqdm)
   write_metadata(metadata, out_dir)
 
-def preprocess_blizzard2013(args):
-  in_dir = os.path.join(args.base_dir, 'database/blizzard2013/segmented')
+def preprocess_imuspeech(args):
+  in_dir = os.path.join(args.base_dir, 'ImuSpeech-1.0')
   out_dir = os.path.join(args.base_dir, args.output)
   os.makedirs(out_dir, exist_ok=True)
-  metadata = blizzard2013.build_from_path(in_dir, out_dir, args.num_workers, tqdm=tqdm)
+  metadata = ImuSpeech.build_from_path(in_dir, out_dir, args.num_workers, tqdm=tqdm)
   write_metadata(metadata, out_dir)
+
 
 def write_metadata(metadata, out_dir):
   with open(os.path.join(out_dir, 'train.txt'), 'w', encoding='utf-8') as f:
@@ -41,17 +42,18 @@ def write_metadata(metadata, out_dir):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--base_dir', default=os.getcwd())
+  #parser.add_argument('--base_dir', default=os.path.expanduser('~/tacotron'))
+  parser.add_argument('--base_dir', default=os.path.expanduser('C:\\Users\\blcdec\\project\\gst-tacotron\\tacotron_imu'))
   parser.add_argument('--output', default='training')
-  parser.add_argument('--dataset', required=True, choices=['blizzard', 'ljspeech', 'blizzard2013'])
+  parser.add_argument('--dataset', required=True, choices=['blizzard', 'ljspeech','imuspeech'])
   parser.add_argument('--num_workers', type=int, default=cpu_count())
   args = parser.parse_args()
   if args.dataset == 'blizzard':
     preprocess_blizzard(args)
   elif args.dataset == 'ljspeech':
     preprocess_ljspeech(args)
-  elif args.dataset == 'blizzard2013':
-    preprocess_blizzard2013(args)
+  elif args.dataset == 'imuspeech':
+    preprocess_imuspeech(args)
 
 
 if __name__ == "__main__":
