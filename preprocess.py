@@ -22,7 +22,7 @@ def preprocess_ljspeech(args):
   write_metadata(metadata, out_dir)
 
 def preprocess_imuspeech(args):
-  in_dir = os.path.join(args.base_dir, 'ImuSpeech-1.0')
+  in_dir = os.path.join(args.base_dir, 'ImuSpeech-2.0')
   out_dir = os.path.join(args.base_dir, args.output)
   os.makedirs(out_dir, exist_ok=True)
   metadata = ImuSpeech.build_from_path(in_dir, out_dir, args.num_workers, tqdm=tqdm)
@@ -35,7 +35,9 @@ def write_metadata(metadata, out_dir):
       f.write('|'.join([str(x) for x in m]) + '\n')
   frames = sum([m[2] for m in metadata])
   hours = frames * hparams.frame_shift_ms / (3600 * 1000)
-  print('Wrote %d utterances, %d frames (%.2f hours)' % (len(metadata), frames, hours))
+  print('Wrote %d utterances, %d frames (%.2f hours)' % (
+
+      len(metadata), frames, hours))
   print('Max input length:  %d' % max(len(m[3]) for m in metadata))
   print('Max output length: %d' % max(m[2] for m in metadata))
 

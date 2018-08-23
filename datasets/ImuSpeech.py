@@ -13,9 +13,9 @@ def build_from_path(in_dir, out_dir, num_workers=1, tqdm=lambda x: x):
   with open(os.path.join(in_dir, 'metadata.csv'), encoding='utf-8') as f:
       for line in f:
           parts = line.strip().split(',')
-          tar_cd_path = os.path.join(in_dir, 'chinese_dubbing', '%s.wav' % parts[0])
-          in_jd_path=os.path.join(in_dir,   'japanese_dubbing', '%s.wav' % parts[1])
-          in_cg_path = os.path.join(in_dir,     'chinese_generate', '%s.wav' % parts[2])
+          tar_cd_path = os.path.join(in_dir, 'wly', '%s.wav' % parts[0])
+          in_jd_path=os.path.join(in_dir,   'gky', '%s.wav' % parts[1])
+          in_cg_path = os.path.join(in_dir,     'tts', '%s.wav' % parts[2])
           futures.append(executor.submit(partial(_process_utterance, out_dir, index, tar_cd_path,in_jd_path, in_cg_path)))
           index += 1
   return [future.result() for future in tqdm(futures)]
