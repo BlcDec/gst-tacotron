@@ -1,0 +1,58 @@
+<html>
+<title>Demo</title>
+<style>
+body {padding: 16px; font-family: sans-serif; font-size: 14px; color: #444;background-color: #e1eef6}
+input {font-size: 14px; padding: 8px 12px; outline: none; border: 1px solid #ddd}
+input:focus {box-shadow: 0 1px 2px rgba(0,0,0,.15)}
+p {padding: 12px}
+button {background: #28d; padding: 9px 14px; margin-left: 8px; border: none; outline: none;
+        color: #fff; font-size: 14px; border-radius: 4px; cursor: pointer;}
+button:hover {box-shadow: 0 1px 2px rgba(0,0,0,.15); opacity: 0.9;}
+button:active {background: #29f;}
+button[disabled] {opacity: 0.4; cursor: default}
+</style>
+<body style="text-align:center;">
+<div  style="margin:0px auto">
+<form>
+  <br>
+  <br>
+  <img src="../static/wenzi.png">
+  <br>
+  <br>
+  <br>
+  <input id="path" type="text" size="40" placeholder="Enter Path">
+  <button id="button" name="synthesize">Transfer</button>
+</form>
+<p id="message"></p>
+<audio id="audio" controls autoplay hidden></audio>
+</div>
+<script>
+function q(selector) {return document.querySelector(selector)}
+q('#path').focus()
+q('#button').addEventListener('click', function(e) {
+  text = q('#path').value.trim()
+  if (text) {
+    q('#message').textContent = 'Synthesizing...'
+    q('#button').disabled = true
+    q('#audio').hidden = true
+    synthesize(text)
+  }
+  e.preventDefault()
+  return false
+})
+function synthesize(text) {
+  fetch('/synthesize?text=' + encodeURIComponent(text), {cache: 'no-cache'})
+    .then(function(res) {
+      if (!res.ok) throw Error(res.statusText)
+      return res.blob()
+    }).then(function(blob) {
+      q('#message').textContent = ''
+      q('#button').disabled = false
+      q('#audio').src = URL.createObjectURL(blob)
+      q('#audio').hidden = false
+    }).catch(function(err) {
+      q('#message').textContent = 'Error: ' + err.message
+      q('#button').disabled = false
+    })
+}
+</script></body></html>

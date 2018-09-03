@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="3c02f867-b9e8-4d10-9c00-ec89a738bc9d" name="AIsummerCamp" url="http://202.207.12.162">
+        <fileTransfer host="202.207.12.162" port="22" rootFolder="/home/user4" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
